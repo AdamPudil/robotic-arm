@@ -223,11 +223,47 @@ module end(lenght = 50, width = 30, center_w = 5, angle = 45) {
 	}
 }
 
+module motor() {
+		motor_d = 26;
+		motor_l = 60; 
+		shaft_d = 7;
+		screw_ch_w = 1;
+		screw_ch_h = 2;
+		screw_pos = 17 / 2;
+		
+		height = 3;
+		
+		translate([0, 0, - motor_l / 2])
+			cylinder(h = motor_l, d = motor_d, center = true);
+		translate([0, 0, height / 2])
+			cylinder(h = height + 1, d = shaft_d, center = true);
+		mirror2([1,0,0]) {
+			translate([screw_pos, 0, 0])
+				union(){
+					translate([0, 0, height / 2])
+						cylinder(h = height + 1, d = screw_d, center = true);
+					translate([0, 0, height + 0.25])
+						cylinder(h = 0.5, d = screw_d + 2 * screw_ch_w,
+								center = true);
+					translate([0, 0, 0])
+						rotate_extrude() 
+							polygon([[ screw_d / 2,height - screw_ch_h],
+									[0,height - screw_ch_h],
+									[0,height],
+									[ screw_d / 2 + screw_ch_w,height]]);
+						
+					};
+		}
+	}
 
-// testing
+//---------//
+// testing //
+//---------//
+
 //pull_rod();
 //pull_lever();
 //motor_lever();
 //spacer();
 //arm_side();
-end();
+//end();
+motor();
