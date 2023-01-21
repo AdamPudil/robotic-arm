@@ -6,6 +6,8 @@ shaft_d = 8;
 
 screw_d = 3.2; 
 
+$fn = 100;
+
 // macros
 module mirror2(v) {
     children();
@@ -87,7 +89,15 @@ module motor_lever ( lenght = 25, width = 8, height = 3) {
     };
 }
 
+module spacer (height = 50, width = 6, hole = screw_d) {
+	difference() {
+		cylinder(h = height, d = width, center = true);
+		cylinder(h = height + 1, d = hole, center = true);
+	};
+}
+
 // testing
 //pull_rod();
 //pull_lever();
-motor_lever();
+//motor_lever();
+spacer();
