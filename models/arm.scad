@@ -162,9 +162,72 @@ module arm_side (lenght = 180, width = 30, height = 5, angle = 0, narrowing = fa
 	};
 }
 
+module end(lenght = 50, width = 30, center_w = 5, angle = 45) {
+	module center() {
+		translate([lenght / 2 - width / 4, 0, 0])
+			cube([lenght - width / 2, center_w, width], center = true);
+		rotate([90,0,0])
+			cylinder(h = center_w, d = width, center = true);
+		// pull rod attach point
+		translate([0, 0, 0])
+			difference() {
+				rotate([-90,180-angle,0]) {
+				
+				// lever
+					translate([-lever_l, 0, 0]) 
+						cylinder(h = 5, d = lever_w, center = true);				
+					// round lever end
+					translate([-lever_l / 2, 0, 0]) 
+						cube([lever_l, lever_w, 5], center = true);
+					if(angle >= 45) {
+						translate([(-lever_l - lever_w)  / 2, -5, 0]) 
+							cube([lever_l, 10 , 5], center = true);
+					}
+				}
+				rotate([-90,180-angle,0])
+					translate([-lever_l, 0, 0]) 
+						cylinder(h = 5 + 1, d = screw_d, center = true);	
+			}
+	}
+	module sides() {
+		difference() {
+			translate([(lenght - width / 2 + 12) / 2, 0, 0])
+				cube([lenght - width / 2 - 12, width, width], center = true);
+			rotate([90,0,0])
+				cylinder(h = width + 1, d = width + 4, center = true);
+			rotate([90,0,0]) 
+				linear_extrude(height = width + 1, center = true)
+				polygon([[0,0],[28,20],[0,20]]);
+			mirror([0,0,1])
+				rotate([90,0,0]) 
+				linear_extrude(height = width + 1, center = true)
+				polygon([[0,0],[20,20],[0,20]]);
+		}
+	}
+	module bearing_hole() {
+		rotate([0,-45,0])
+			translate([bearing_d / 4, 0, bearing_d / 4])
+				cube([bearing_d / 2, center_w + 1, bearing_d / 2], center = true);
+		rotate([90,0,0])
+			cylinder(h = center_w + 1, d = bearing_d, center = true);
+	}
+	
+	difference() {
+		union() {
+			center();
+			sides();
+		}
+		union() {
+			bearing_hole();
+		}
+	}
+}
+
+
 // testing
 //pull_rod();
 //pull_lever();
 //motor_lever();
 //spacer();
-arm_side();
+//arm_side();
+end();
