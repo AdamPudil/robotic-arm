@@ -162,7 +162,7 @@ module arm_side (lenght = 180, width = 30, height = 5, angle = 0, narrowing = fa
 	};
 }
 
-module end(lenght = 50, width = 30, center_w = 5, angle = 45) {
+module end(lenght = 50, width = 30, center_w = 13, angle = 45) {
 	module center() {
 		translate([lenght / 2 - width / 4, 0, 0])
 			cube([lenght - width / 2, center_w, width], center = true);
@@ -172,14 +172,13 @@ module end(lenght = 50, width = 30, center_w = 5, angle = 45) {
 		translate([0, 0, 0])
 			difference() {
 				rotate([-90,180-angle,0]) {
-				
 				// lever
 					translate([-lever_l, 0, 0]) 
-						cylinder(h = 5, d = lever_w, center = true);				
+						cylinder(h = 5, d = lever_w, center = true);
 					// round lever end
 					translate([-lever_l / 2, 0, 0]) 
 						cube([lever_l, lever_w, 5], center = true);
-					if(angle >= 45) {
+					if(angle <= 45) {
 						translate([(-lever_l - lever_w)  / 2, -5, 0]) 
 							cube([lever_l, 10 , 5], center = true);
 					}
@@ -205,11 +204,17 @@ module end(lenght = 50, width = 30, center_w = 5, angle = 45) {
 		}
 	}
 	module bearing_hole() {
-		rotate([0,-45,0])
-			translate([bearing_d / 4, 0, bearing_d / 4])
-				cube([bearing_d / 2, center_w + 1, bearing_d / 2], center = true);
-		rotate([90,0,0])
-			cylinder(h = center_w + 1, d = bearing_d, center = true);
+		difference() {
+			union() {
+				rotate([0,-45,0])
+					translate([bearing_d / 4, 0, bearing_d / 4])
+					cube([bearing_d / 2, center_w + 1, bearing_d / 2], center = true);
+				rotate([90,0,0])
+					cylinder(h = center_w + 1, d = bearing_d, center = true);
+			}
+			translate([0, 0, (bearing_d + 10) / 2])
+			cube([bearing_d ,center_w + 2 , 10], center = true);
+		}
 	}
 	
 	difference() {
@@ -265,5 +270,5 @@ module motor() {
 //motor_lever();
 //spacer();
 //arm_side();
-//end();
-motor();
+end();
+//motor();
