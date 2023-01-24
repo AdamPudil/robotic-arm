@@ -110,7 +110,7 @@ module arm_side (lenght = 180, width = 30, height = 5, angle = 0, spacer = 1, na
 		translate([-lenght / 2, 0, 0]) 
 			cylinder(h = height, d = width, center = true);
 		translate([lenght / 2,0,(height + spacer) / 2])
-			cylinder(h = spacer, d = shaft_d + 4, center = true);
+			cylinder(h = spacer, d = shaft_d + 6, center = true);
 	}
 	
 	module arm() {
