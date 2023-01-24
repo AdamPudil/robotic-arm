@@ -97,18 +97,20 @@ module spacer (height = 50, width = 6, hole = screw_d) {
 	};
 }
 
-module arm_side (lenght = 180, width = 30, height = 5, angle = 0, narrowing = false, rounded = true) {
+module arm_side (lenght = 180, width = 30, height = 5, angle = 0, spacer = 1, narrowing = true, rounded = true) {
 	module body() {
 		cube([lenght, width, height], center = true);
-			translate([lenght / 2, 0, 0]) 
-				rotate([0,0,30]) 
-					if(rounded) 
-						cylinder(h = height, d = width, center = true);
-					else 
-						cylinder(h = height, d = width, center = true, $fn = 6);
-					
-			translate([-lenght / 2, 0, 0]) 
+		translate([lenght / 2, 0, 0]) 
+			rotate([0,0,30]) 
+				if(rounded) 
 					cylinder(h = height, d = width, center = true);
+				else 
+					cylinder(h = height, d = width, center = true, $fn = 6);
+					
+		translate([-lenght / 2, 0, 0]) 
+			cylinder(h = height, d = width, center = true);
+		translate([lenght / 2,0,(height + spacer) / 2])
+			cylinder(h = spacer, d = shaft_d + 4, center = true);
 	}
 	
 	module arm() {
@@ -123,8 +125,8 @@ module arm_side (lenght = 180, width = 30, height = 5, angle = 0, narrowing = fa
 	}
 
 	module holes() {
-		translate([lenght / 2, 0, 0]) 
-					cylinder(h = height + 1, d = shaft_d, center = true);
+		translate([lenght / 2, 0, spacer / 2]) 
+					cylinder(h = height + spacer + 1, d = shaft_d, center = true);
 			translate([-lenght / 2, 0, 0]) 
 					cylinder(h = height + 1, d = bearing_d, center = true);
 			translate([-lenght / 2, 0, 0]) 
@@ -274,6 +276,6 @@ module motor() {
 //pull_lever();
 //motor_lever();
 //spacer();
-//arm_side();
-end(angle = 90);
+arm_side();
+//end(angle = 90);
 //motor();
