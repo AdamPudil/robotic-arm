@@ -2,6 +2,7 @@ lever_w = 10;
 lever_l = 25;
 
 bearing_d = 16;
+bearing_h = 5;
 shaft_d = 8;
 
 screw_d = 3.2; 
@@ -162,7 +163,7 @@ module arm_side (lenght = 180, width = 30, height = 5, angle = 0, narrowing = fa
 	};
 }
 
-module end(lenght = 50, width = 30, center_w = 13, angle = 45) {
+module end(lenght = 50, width = 30, center_w = 15, angle = 45) {
 	module center() {
 		translate([lenght / 2 - width / 4, 0, 0])
 			cube([lenght - width / 2, center_w, width], center = true);
@@ -207,10 +208,11 @@ module end(lenght = 50, width = 30, center_w = 13, angle = 45) {
 		difference() {
 			union() {
 				rotate([0,-45,0])
-					translate([bearing_d / 4, 0, bearing_d / 4])
-					cube([bearing_d / 2, center_w + 1, bearing_d / 2], center = true);
-				rotate([90,0,0])
-					cylinder(h = center_w + 1, d = bearing_d, center = true);
+					translate([bearing_d / 4, (center_w - bearing_h + 1) / 2, bearing_d / 4])
+					cube([bearing_d / 2, bearing_h + 1, bearing_d / 2], center = true);
+				translate([0,(center_w - bearing_h + 1) / 2,0])
+					rotate([90,0,0])
+					cylinder(h = bearing_h + 1, d = bearing_d, center = true);
 			}
 			translate([0, 0, (bearing_d + 10) / 2])
 			cube([bearing_d ,center_w + 2 , 10], center = true);
@@ -223,7 +225,10 @@ module end(lenght = 50, width = 30, center_w = 13, angle = 45) {
 			sides();
 		}
 		union() {
-			bearing_hole();
+			mirror2([0,1,0])
+				bearing_hole();
+			rotate([90,45 / 2,0])
+				cylinder(h = bearing_h + 1, d = shaft_d * 1.5, center = true, $fn = 8);
 		}
 	}
 }
