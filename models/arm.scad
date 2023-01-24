@@ -1,7 +1,7 @@
 lever_w = 10;
 lever_l = 25;
 
-bearing_d = 16.2;
+bearing_d = 16.4;
 bearing_h = 5;
 shaft_d = 8;
 
