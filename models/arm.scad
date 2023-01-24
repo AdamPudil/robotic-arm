@@ -275,5 +275,5 @@ module motor() {
 //motor_lever();
 //spacer();
 //arm_side();
-end();
+end(angle = 90);
 //motor();
