@@ -90,9 +90,9 @@ module motor_lever ( lenght = 25, width = 8, height = 3) {
     };
 }
 
-module spacer (height = 50, width = 6, hole = screw_d) {
+module spacer (height = 50, out = 2, hole = shaft_d) {
 	difference() {
-		cylinder(h = height, d = width, center = true);
+		cylinder(h = height, d = out * hole, center = true);
 		cylinder(h = height + 1, d = hole, center = true);
 	};
 }
@@ -275,7 +275,7 @@ module motor() {
 //pull_rod();
 //pull_lever();
 //motor_lever();
-//spacer();
-arm_side();
+spacer(height = 1);
+//arm_side();
 //end(angle = 90);
 //motor();
