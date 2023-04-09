@@ -1,11 +1,13 @@
 lever_w = 10;
 lever_l = 25;
 
-bearing_d = 16.4;
+bearing_d = 16;
 bearing_h = 5;
 shaft_d = 8;
 
 screw_d = 3.2; 
+
+motor_d = 25;
 
 $fn = 100;
 
@@ -32,8 +34,8 @@ module pull_rod (lenght = 180, width = 8, height = 3) {
     };
 }
 
-module pull_lever (angle = 90, lenght = 25, width = 8, height = 5) {
-    module lever() {
+module pull_lever (angle = 90, lenght_a = 25, lenght_b = 25, width = 8, height = 5) {
+    module lever(lenght) {
 		difference(){
 			union() {
 				translate([lenght / 2, 0, 0]) 
@@ -52,17 +54,17 @@ module pull_lever (angle = 90, lenght = 25, width = 8, height = 5) {
         union() {
         	cylinder(h = height, d = center_diameter, center = true);
 
-			lever();
+			lever(lenght = lenght_a);
 			if(angle >= 15 || angle <= -15) {
 				rotate([0,0,angle])
-					lever();
+					lever(lenght_b);
 			}
         };
         cylinder(h = height + 1, d = bearing_d, center = true);
 	};
 }
 
-module motor_lever ( lenght = 25, width = 8, height = 3) {
+module motor_lever ( lenght = 25, width = 8, height = 6) {
     module lever() {
 		cylinder(h = height, d = center_diameter, center = true);
 		translate([lenght / 2, 0, 0]) 
@@ -71,18 +73,19 @@ module motor_lever ( lenght = 25, width = 8, height = 3) {
 			cylinder(h = height, d = width, center = true);
 	}
 	module holes() {
-		difference() {
-            cylinder(h = height + 1, d = hole, center = true);
-			translate([hole - ofset,0,0])
-				cube([hole, hole, height + 2], center = true);
-			}
+        cylinder(h = height + 1, d = hole, center = true);
+        translate([0, 7, 0])
+            cube([5.4, 2.4, 7], center = true);
+        translate([0, 10, 0])
+            rotate([90,00,0])
+                cylinder(h = 20, d = screw_d, center = true);
         translate([lenght, 0, 0]) 
 			cylinder(h = height + 1, d = screw_d, center = true);
 	}
 	
-	hole = 4;
+	hole = 4.4;
     ofset = 0.5;
-    center_diameter = 16;
+    center_diameter = 24;
 
     difference() {
         lever();
@@ -236,7 +239,7 @@ module end(lenght = 50, width = 30, center_w = 15, angle = 45) {
 }
 
 module motor() {
-		motor_d = 26;
+		motor_d = 28;
 		motor_l = 60; 
 		shaft_d = 7;
 		screw_ch_w = 1;
@@ -268,14 +271,129 @@ module motor() {
 		}
 	}
 
+
+module body() {
+    height = 60;
+    arm_width = 55;
+    
+    module side_holder() {
+        difference() {
+            union() {
+                translate([0,0,-height / 2])
+                    cube([30,5,height], center = true);
+                rotate([90,0,0])
+                    cylinder(h = 5, d = 30, center = true);
+                }
+            
+            rotate([90,0,0])
+                    cylinder(h = 6, d = shaft_d, center = true);
+        }
+    }
+    
+    module stabilizer() {
+        difference() {
+            union() {
+                translate([-20,0,-height / 2])
+                    cube([40,5,height], center = true);
+                translate([-40,0,-height / 2])
+                    cube([10,5,height], center = true);
+                translate([-40,0,0])
+                    rotate([90,0,0])
+                    cylinder(h = 5, d = 10, center = true);
+            }
+            union() {
+                translate([-40,0,0])
+                    rotate([90,0,0])
+                    cylinder(h = 6, d = screw_d, center = true);
+                rotate([90,0,0])
+                    cylinder(h = 6, r = 35, center = true);
+            }
+        }   
+    }
+    
+    module center() {
+        difference() {
+            union() {
+                translate([0,0,(-height - 35) / 2])
+                      cube([5,arm_width ,height - 35], center = true);
+                translate([0,0,-height + (5 / 2)])
+                      cube([30,arm_width ,5], center = true);
+            }
+        }
+    }
+    
+    module motor_back() {
+        translate([-20,-17,(-height - 35) / 2])
+            cube([40, 5, height - 35], center = true);
+        translate([-20,-8.5,-height + (5 / 2)])
+            cube([40, 12, 5], center = true);
+    }
+    
+    module motor_front() {
+        translate([20,5,(-height - 35) / 2])
+            cube([40, 5, height - 35], center = true);
+    }
+    
+    difference() {
+        union() {
+            center();
+            stabilizer();
+            motor_front();
+            motor_back();
+            mirror2([0,1,0]) 
+                translate([0, arm_width / 2 + 2.5,0])
+                    side_holder();
+        }
+        union() {
+            translate([-25,-16.5,-45])
+                rotate([90,0,0])
+                motor();
+            translate([25,4.5,-45])
+                rotate([-90,0,0])
+                motor();
+            
+        }
+    }
+}
 //---------//
 // testing //
 //---------//
 
 //pull_rod();
-//pull_lever();
+pull_lever(angle = 20);
 //motor_lever();
-spacer(height = 2);
-//arm_side();
+//spacer(height = 29);
+//arm_side(angle = 90);
 //end(angle = 90);
 //motor();
+//body();
+
+
+ /*   
+translate([0,11,0])
+    rotate([90,0,0])
+    color("red")
+    pull_lever(angle = 20);
+
+translate([0,-6,0])
+    rotate([90,0,0])
+    color("blue")
+    spacer(height = 29);
+
+translate([0,17,0])
+    rotate([90,0,0])
+    color("blue")
+    spacer(height = 7);
+
+mirror2([0,1,0])
+    translate([0,26.5,0])
+    rotate([90,0,0])
+    color("green")
+    spacer(height = 2);
+
+mirror2([0,1,0])
+    translate([0,23,0])
+    rotate([90,-90,0])
+    color("red")
+    arm_side(angle = 90);
+    //*/
