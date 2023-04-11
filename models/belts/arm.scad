@@ -360,16 +360,17 @@ module body() {
 //---------//
 
 //pull_rod();
-pull_lever(angle = 20);
+//pull_rod(lenght = 51.5);
+//pull_lever(angle = 20);
 //motor_lever();
 //spacer(height = 29);
 //arm_side(angle = 90);
 //end(angle = 90);
 //motor();
-//body();
+body();
 
 
- /*   
+    
 translate([0,11,0])
     rotate([90,0,0])
     color("red")
