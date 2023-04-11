@@ -17,7 +17,43 @@ module mirror2(v) {
     mirror(v) children();
 }
 
-// modules
+module pulley(teeth = 40, height = 12) {
+    additional_tooth_width = 0.2; //mm
+    additional_tooth_depth = 0.2; //mm
+
+    
+    pulley_OD = (2*((teeth*2)/(3.14159265*2)-0.254));
+    tooth_depth = 0.764;
+    tooth_width = 1.494;
+    
+	tooth_distance_from_centre = sqrt( pow(pulley_OD/2,2) - pow((tooth_width+additional_tooth_width)/2,2));
+	tooth_width_scale = (tooth_width + additional_tooth_width ) / tooth_width;
+	tooth_depth_scale = ((tooth_depth + additional_tooth_depth ) / tooth_depth) ;
+
+    module GT2_2mm() {
+        linear_extrude(height=height+2) polygon([[0.747183,-0.5],[0.747183,0],[0.647876,0.037218],
+        [0.598311,0.130528],[0.578556,0.238423],[0.547158,0.343077],[0.504649,0.443762],[0.451556,0.53975],
+        [0.358229,0.636924],[0.2484,0.707276],[0.127259,0.750044],[0,0.76447],[-0.127259,0.750044],
+        [-0.2484,0.707276],[-0.358229,0.636924],[-0.451556,0.53975],[-0.504797,0.443762],[-0.547291,0.343077],
+        [-0.578605,0.238423],[-0.598311,0.130528],[-0.648009,0.037218],[-0.747183,0],[-0.747183,-0.5]]);
+    }
+
+	difference() {	
+		rotate ([0,0,360/(teeth*4)]) 
+		cylinder(r=pulley_OD/2,h=height, $fn=teeth*4);
+	
+		//teeth - cut out of shaft
+		
+		for(i=[1:teeth]) 
+        rotate([0,0,i*(360/teeth)]) 
+        translate([0,-tooth_distance_from_centre,-1]) 
+        scale ([ tooth_width_scale , tooth_depth_scale , 1 ]) 
+        {
+         GT2_2mm();
+        }
+	}		
+}
+
 module pull_rod (lenght = 180, width = 8, height = 3) {
     difference() {
         union() {
@@ -168,72 +204,40 @@ module arm_side (lenght = 180, width = 30, height = 5, angle = 0, spacer = 1, na
 	};
 }
 
-module end(lenght = 50, width = 30, center_w = 15, angle = 45) {
+module end(lenght = 50, width = 30, center_w = 20, gear_w = 10, teeth = 40) {
 	module center() {
 		translate([lenght / 2 - width / 4, 0, 0])
 			cube([lenght - width / 2, center_w, width], center = true);
 		rotate([90,0,0])
 			cylinder(h = center_w, d = width, center = true);
-		// pull rod attach point
-		translate([0, 0, 0])
-			difference() {
-				rotate([-90,180-angle,0]) {
-				// lever
-					translate([-lever_l, 0, 0]) 
-						cylinder(h = 5, d = lever_w, center = true);
-					// round lever end
-					translate([-lever_l / 2, 0, 0]) 
-						cube([lever_l, lever_w, 5], center = true);
-					if(angle <= 45) {
-						translate([(-lever_l - lever_w)  / 2, -5, 0]) 
-							cube([lever_l, 10 , 5], center = true);
-					}
-				}
-				rotate([-90,180-angle,0])
-					translate([-lever_l, 0, 0]) 
-						cylinder(h = 5 + 1, d = screw_d, center = true);	
-			}
+		
 	}
+    
 	module sides() {
 		difference() {
-			translate([(lenght - width / 2 + 12) / 2, 0, 0])
-				cube([lenght - width / 2 - 12, width, width], center = true);
+			translate([(lenght - width / 2 )/ 2, 0, 0])
+				cube([lenght - width / 2, width, width], center = true);
 			rotate([90,0,0])
-				cylinder(h = width + 1, d = width + 4, center = true);
-			rotate([90,0,0]) 
-				linear_extrude(height = width + 1, center = true)
-				polygon([[0,0],[28,20],[0,20]]);
-			mirror([0,0,1])
-				rotate([90,0,0]) 
-				linear_extrude(height = width + 1, center = true)
-				polygon([[0,0],[20,20],[0,20]]);
-		}
-	}
-	module bearing_hole() {
-		difference() {
-			union() {
-				rotate([0,-45,0])
-					translate([bearing_d / 4, (center_w - bearing_h + 1) / 2, bearing_d / 4])
-					cube([bearing_d / 2, bearing_h + 1, bearing_d / 2], center = true);
-				translate([0,(center_w - bearing_h + 1) / 2,0])
-					rotate([90,0,0])
-					cylinder(h = bearing_h + 1, d = bearing_d, center = true);
-			}
-			translate([0, 0, (bearing_d + 10) / 2])
-			cube([bearing_d ,center_w + 2 , 10], center = true);
+				cylinder(h = width + 1, d = (2*((teeth*2)/(3.14159265*2)-0.254)) + 1, center = true);
+            mirror2([0,0,1])
+                rotate([0,-45,0])
+                translate([width / 2, 0, width / 2])
+                cube([width, width + 1, width], center = true);
 		}
 	}
 	
 	difference() {
 		union() {
-			center();
+            translate([0,gear_w / 2,0])
+                center();
+            translate([0, -(center_w-gear_w) / 2,0])
+                rotate([90,0,0])
+                pulley(teeth = teeth, height = gear_w);
 			sides();
 		}
 		union() {
-			mirror2([0,1,0])
-				bearing_hole();
 			rotate([90,45 / 2,0])
-				cylinder(h = bearing_h + 1, d = shaft_d * 1.5, center = true, $fn = 8);
+				cylinder(h = center_w + gear_w + 1, d = shaft_d * 1.5, center = true);
 		}
 	}
 }
@@ -365,12 +369,13 @@ module body() {
 //motor_lever();
 //spacer(height = 29);
 //arm_side(angle = 90);
-//end(angle = 90);
+
+end();
 //motor();
-body();
+//body();
 
 
-    
+/*
 translate([0,11,0])
     rotate([90,0,0])
     color("red")
