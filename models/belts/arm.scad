@@ -54,81 +54,6 @@ module pulley(teeth = 40, height = 12) {
 	}		
 }
 
-module pull_rod (lenght = 180, width = 8, height = 3) {
-    difference() {
-        union() {
-            cube([lenght, width, height], center = true);
-            mirror2([1,0,0]) {
-                translate([lenght / 2, 0, 0]) 
-                    cylinder(h = height, d = width, center = true);
-            }
-        };
-        mirror2([1,0,0]) {
-            translate([lenght / 2, 0, 0]) 
-                cylinder(h = height + 1, d = screw_d, center = true);
-        }
-    };
-}
-
-module pull_lever (angle = 90, lenght_a = 25, lenght_b = 25, width = 8, height = 5) {
-    module lever(lenght) {
-		difference(){
-			union() {
-				translate([lenght / 2, 0, 0]) 
-					cube([lenght, width, height], center = true);
-				translate([lenght, 0, 0]) 
-					cylinder(h = height, d = width, center = true);
-			}
-			translate([lenght, 0, 0]) 
-				cylinder(h = height + 1, d = screw_d, center = true);
-		}
-	}
-
-	center_diameter = 28;
-
-    difference() {
-        union() {
-        	cylinder(h = height, d = center_diameter, center = true);
-
-			lever(lenght = lenght_a);
-			if(angle >= 15 || angle <= -15) {
-				rotate([0,0,angle])
-					lever(lenght_b);
-			}
-        };
-        cylinder(h = height + 1, d = bearing_d, center = true);
-	};
-}
-
-module motor_lever ( lenght = 25, width = 8, height = 6) {
-    module lever() {
-		cylinder(h = height, d = center_diameter, center = true);
-		translate([lenght / 2, 0, 0]) 
-			cube([lenght, width, height], center = true);
-		translate([lenght, 0, 0]) 
-			cylinder(h = height, d = width, center = true);
-	}
-	module holes() {
-        cylinder(h = height + 1, d = hole, center = true);
-        translate([0, 7, 0])
-            cube([5.4, 2.4, 7], center = true);
-        translate([0, 10, 0])
-            rotate([90,00,0])
-                cylinder(h = 20, d = screw_d, center = true);
-        translate([lenght, 0, 0]) 
-			cylinder(h = height + 1, d = screw_d, center = true);
-	}
-	
-	hole = 4.4;
-    ofset = 0.5;
-    center_diameter = 24;
-
-    difference() {
-        lever();
-        holes();
-    };
-}
-
 module spacer (height = 50, width = 3, hole = shaft_d) {
 	difference() {
 		cylinder(h = height, d = hole + 2 * width, center = true);
@@ -341,10 +266,7 @@ module body() {
 // testing //
 //---------//
 
-//pull_rod();
-//pull_rod(lenght = 51.5);
-//pull_lever(angle = 20);
-//motor_lever();
+
 //spacer(height = 29);
 arm_side();
 
@@ -354,11 +276,6 @@ arm_side();
 
 
 /*
-translate([0,11,0])
-    rotate([90,0,0])
-    color("red")
-    pull_lever(angle = 20);
-
 translate([0,-6,0])
     rotate([90,0,0])
     color("blue")
