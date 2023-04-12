@@ -204,25 +204,25 @@ module arm_side (lenght = 180, width = 30, height = 5, angle = 0, spacer = 1, na
 	};
 }
 
-module end(lenght = 50, width = 30, center_w = 20, gear_w = 10, teeth = 40) {
+module end(lenght = 50, height = 30, width = 20, gear_w = 10, teeth = 40) {
 	module center() {
-		translate([lenght / 2 - width / 4, 0, 0])
-			cube([lenght - width / 2, center_w, width], center = true);
+		translate([lenght / 2 - height / 4, 0, 0])
+			cube([lenght - height / 2, width - gear_w, height], center = true);
 		rotate([90,0,0])
-			cylinder(h = center_w, d = width, center = true);
+			cylinder(h = width - gear_w, d = height, center = true);
 		
 	}
     
 	module sides() {
 		difference() {
-			translate([(lenght - width / 2 )/ 2, 0, 0])
-				cube([lenght - width / 2, width, width], center = true);
+			translate([(lenght - height / 2 )/ 2, 0, 0])
+				cube([lenght - height / 2, width, height], center = true);
 			rotate([90,0,0])
 				cylinder(h = width + 1, d = (2*((teeth*2)/(3.14159265*2)-0.254)) + 1, center = true);
             mirror2([0,0,1])
                 rotate([0,-45,0])
-                translate([width / 2, 0, width / 2])
-                cube([width, width + 1, width], center = true);
+                translate([height / 2, 0, height / 2])
+                cube([height, width + 1, height], center = true);
 		}
 	}
 	
@@ -230,14 +230,14 @@ module end(lenght = 50, width = 30, center_w = 20, gear_w = 10, teeth = 40) {
 		union() {
             translate([0,gear_w / 2,0])
                 center();
-            translate([0, -(center_w-gear_w) / 2,0])
+            translate([0, -(width - gear_w-gear_w) / 2,0])
                 rotate([90,0,0])
                 pulley(teeth = teeth, height = gear_w);
 			sides();
 		}
 		union() {
 			rotate([90,45 / 2,0])
-				cylinder(h = center_w + gear_w + 1, d = shaft_d * 1.5, center = true);
+				cylinder(h = width + 1, d = shaft_d, center = true);
 		}
 	}
 }
