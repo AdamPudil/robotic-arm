@@ -136,46 +136,23 @@ module spacer (height = 50, width = 3, hole = shaft_d) {
 	};
 }
 
-module arm_side (lenght = 180, width = 30, height = 5, angle = 0, spacer = 1, narrowing = true, rounded = true) {
+module arm_side (lenght = 180, width = 30, height = 5, narrowing = true, gear_h = 10, teeth = 40) {
 	module body() {
 		cube([lenght, width, height], center = true);
 		translate([lenght / 2, 0, 0]) 
-			rotate([0,0,30]) 
-				if(rounded) 
-					cylinder(h = height, d = width, center = true);
-				else 
-					cylinder(h = height, d = width, center = true, $fn = 6);
-					
+            cylinder(h = height, d = width, center = true);		
 		translate([-lenght / 2, 0, 0]) 
 			cylinder(h = height, d = width, center = true);
-		translate([lenght / 2,0,(height + spacer) / 2])
-			cylinder(h = spacer, d = shaft_d + 6, center = true);
-	}
-	
-	module arm() {
-		translate([-lenght / 2, 0, 0]) 
-				rotate([0,0,angle])
-					union(){
-						translate([lever_l / 2, 0, 0]) 
-							cube([lever_l, lever_w, height], center = true);
-						translate([lever_l, 0, 0]) 
-							cylinder(h = height, d = lever_w, center = true);
-					};
 	}
 
 	module holes() {
-		translate([lenght / 2, 0, spacer / 2]) 
-					cylinder(h = height + spacer + 1, d = shaft_d, center = true);
-			translate([-lenght / 2, 0, 0]) 
-					cylinder(h = height + 1, d = bearing_d, center = true);
-			translate([-lenght / 2, 0, 0]) 
-				rotate([0,0,angle])
-					translate([lever_l, 0, 0]) 
-						cylinder(h = height + 1, d = screw_d, center = true);
-			mirror2([1,0,0]) {
-                translate([width / 2, 0, 0]) 
-					cylinder(h = height + 1, d = screw_d, center = true);
-			}
+		translate([lenght / 2, 0, 0]) 
+			cylinder(h = height + 1, d = bearing_d, center = true);
+		translate([-lenght / 2, 0, gear_h / 2]) 
+			cylinder(h = height + gear_h + 1, d = shaft_d, center = true);
+		mirror2([1,0,0]) 
+            translate([width / 2, 0, 0]) 
+				cylinder(h = height + 1, d = screw_d, center = true);
 	}
 
 	module side_cuts() {
@@ -193,7 +170,8 @@ module arm_side (lenght = 180, width = 30, height = 5, angle = 0, spacer = 1, na
 	difference() {
 		union() {
 			body();
-			arm();
+            translate([-lenght / 2,0,height / 2])
+                pulley(teeth = teeth, height = gear_h);
 		};
 		union(){
 			holes();
@@ -368,9 +346,9 @@ module body() {
 //pull_lever(angle = 20);
 //motor_lever();
 //spacer(height = 29);
-//arm_side(angle = 90);
+arm_side();
 
-end();
+//end();
 //motor();
 //body();
 
